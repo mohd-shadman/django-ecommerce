@@ -1,0 +1,91 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}
+<title>Cart</title>
+{% endblock %}
+
+{% block body %}
+    <!-- Header part end-->
+
+    <!-- breadcrumb part start-->
+    <section class="breadcrumb_part">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb_iner">
+                        <h2>cart list</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- breadcrumb part end-->
+
+    
+    {% if cart %}
+    <table class="table mt-1">
+      <thead>
+        <tr>
+
+          <th></th>
+          <th>Name</th>
+          <th>Brand/Color/Size</th>
+          <th>Price</th>
+          <th></th>
+          <th>Qty</th>
+          <th></th>
+          <th>Total</th>
+          <th></th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {% for key,value in cart.items %}
+        <tr>
+          <td><a href="{{value.pic}}" target="_blank"><img src="{{ value.pic }}" height="80px" width="80px" class="rounded" alt=""></a></td>
+          <td>{{value.name}}</td>
+          <td>{{value.brand}}/{{value.color}}/{{value.size}}</td>
+          <td>&#8377;{{value.price}}</td>
+          <td><a class="btn btn-secondary" href="/update-cart/{{key}}/dec"><i class="fa fa-minus text-light"></i></a></td>
+          <td>{{value.qty}}</td>
+          <td><a class="btn btn-secondary" href="/update-cart/{{key}}/inc"><i class="fa fa-plus text-light"></i></a></td>
+          <td>&#8377;{{value.total}}</td>
+          <td><a class="btn btn-danger" href="/delete-cart/{{key}}/"><i class="fa fa-trash text-light"></i></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-md-8"></div>
+      <div class="col-md-4">
+        <table class="table">
+          <tr>
+            <th>Subtotal</th>
+            <td>&#8377;{{subtotal}}</td>
+          </tr>
+          <tr>
+            <th>Shipping</th>
+            <td>&#8377;{{shipping}}</td>
+          </tr>
+          <tr>
+            <th>Total</th>
+            <td>&#8377;{{total}}</td>
+          </tr>
+          <tr>
+            <td colspan="2"><a href="/checkout/" class="btn_3 w-100 text-center"> checkout</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    {% else %}
+    <div class="my-5 text-center">
+      <p>No Items In Cart</p>
+      <a class="btn_3" href="/shop/All/All/All">Shop Now</a>
+    </div>
+    {% endif %}
+{% endblock %}
+  <!--================End Cart Area =================-->
+   
+  

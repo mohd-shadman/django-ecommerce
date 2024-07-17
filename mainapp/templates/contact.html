@@ -1,0 +1,108 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}
+<title>Contact</title>
+{% endblock %}
+
+{% block body %}
+<!-- Header part end-->
+
+<!-- breadcrumb part start-->
+<section class="breadcrumb_part">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb_iner">
+          <h2>Contact</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- breadcrumb part end-->
+
+<!-- ================ contact section start ================= -->
+<section class="contact-section pt-2">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="contact-title">Get in Touch</h2>
+      </div>
+      <div class="col-lg-7">
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
+          {{m}}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name">Name <span class="text-danger">*</span></label>
+            <input type="text" id="name" name="name" required class="form-control" placeholder="Full Name">
+          </div>
+          <div class="mb-3">
+            <label for="email">Email <span class="text-danger">*</span></label>
+            <input type="email" id="email" name="email" required class="form-control" placeholder="Email Address">
+          </div>
+          <div class="mb-3">
+            <label for="phone">Phone <span class="text-danger">*</span></label>
+            <input type="phone" id="phone" name="phone" required class="form-control" placeholder="Phone NO">
+          </div>
+          <div class="mb-3">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" class="form-control" placeholder="Subject">
+          </div>
+          <div class="mb-3">
+            <label for="message">Message <span class="text-danger">*</span></label>
+            <textarea id="message" name="message" required class="form-control" rows="5"
+              placeholder="Your Message"></textarea>
+          </div>
+          <div class="mb-3">
+            <button type="submit" class="btn btn_3 w-100">Send Message</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-lg-5">
+        <div class="media contact-info">
+          <span class="contact-info__icon"><i class="ti-home"></i></span>
+          <div class="media-body">
+            <h3>Sarai Daidumber</h3>
+            <p>A-43, sector 16, 246764</p>
+          </div>
+        </div>
+        <div class="media contact-info">
+          <span class="contact-info__icon"><i class="ti-tablet"></i></span>
+          <div class="media-body">
+            <h3><a href="tel:6396142793" class="text-dark">+91 6396142793</a></h3>
+            <p>Mon to Fri 9am to 6pm</p>
+          </div>
+        </div>
+        <div class="media contact-info">
+          <span class="contact-info__icon"><i class="ti-email"></i></span>
+          <div class="media-body">
+            <h3><a href="mailto:shadmanmohd956@gmail.com" class="text-dark">shadmanmohd956@gmail.com</a></h3>
+            <p>Send us your query anytime!</p>
+          </div>
+        </div>
+        <div class="d-none d-sm-block mb-5 pb-4">
+          <div class="mapouter">
+            <div class="gmap_canvas">
+              <iframe width="100%" height="335" id="gmap_canvas"
+                src="https://maps.google.com/maps?q=kotwali%20dehat&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"
+                scrolling="no" marginheight="0" marginwidth="0"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- ================ contact section end ================= -->
+{% endblock %}

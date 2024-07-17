@@ -1,0 +1,189 @@
+{% extends "index.html" %}
+{% load static %}
+{% load filters %}
+
+{% block title %}
+<title>Profile</title>
+{% endblock %}
+
+{% block body %}
+<!-- Header part end-->
+
+<!-- breadcrumb part start-->
+<section class="breadcrumb_part">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    {% comment %} <h2>Profile</h2> {% endcomment %}
+                    <h2>{{ buyer.username }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb part end-->
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            {% if buyer.pic %}
+            <img src="{{ buyer.pic.url }}" height="440px" width="90%" alt="loading images">
+            {% else %}
+            <img src="{% static 'banner/no-img1.png' %}" height="450px" alt="image loading">
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <td>{{ buyer.name }}</td>
+                </tr>
+                <tr>
+                    <th>Username</th>
+                    <td>{{ buyer.username }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ buyer.email }}</td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>{{ buyer.address }}</td>
+                </tr>
+                <tr>
+                    <th>Pin</th>
+                    <td>{{ buyer.pin }}</td>
+                </tr>
+                <tr>
+                    <th>City</th>
+                    <td>{{ buyer.city }}</td>
+                </tr>
+                <tr>
+                    <th>State</th>
+                    <td>{{ buyer.state }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <a href="{% url 'updateprofile' %}" class="btn btn_3 w-100 text-center">Update Profile</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h3 class="text-center mt-3" style="background-color: rgb(67, 36, 95); color:white;">Wishlist Section</h3>
+    {% if wishlist %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Name</th>
+                    <th>Brand/Color/Size</th>
+                    <th>Price</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in wishlist %}
+                <tr>
+                    <td><img src="{{ item.product.pic1.url }}" alt="" height="80px" width="80px" class="rounded"></td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.brand }}/{{ item.product.color }}/{{ item.product.size }}</td>
+                    <td>{{ item.product.finalprice }}</td>
+                    <td><a href="/single-product/{{item.product.id}}/"><i class="fa fa-shopping-cart"></i></a></td>
+                    <td><a href="/delete-wishlist/{{item.id}}/"><i class="fa fa-trash text-danger"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center mt-3">No Items in wishlist</p>
+    {% endif %}
+
+    <h3 class="text-center mt-3" style="background-color: rgb(67, 36, 95); color:white;">Orders History Section</h3>
+    {% if orders %}
+    <div class="row">
+        {% for item in orders %}
+        <div class="col-md-3">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Order Id</th>
+                    <td>{{item.checkout.id}}</td>
+                </tr>
+                <tr>
+                    <th> OrderStatus</th>
+                    <td>{{Request|orderStatus:item.checkout.orderstatus}}</td>
+                </tr>
+                <tr>
+                    <th>PaymentMode</th>
+                    <td>{{Request|paymentMode:item.checkout.paymentmode}}</td>
+                </tr>
+                <tr>
+                    <th>PaymentStatus</th>
+                    <td>{{Request|paymentStatus:item.checkout.paymentstatus}}
+                        <br>
+                        {% if item.checkout.paymentmode|paymentCondition:item.checkout.paymentstatus %}
+                        <a href="/re-payment/{{item.checkout.id}}" class="btn_3 btn-sm mt-2">PayNow</a>
+                        {% endif %}
+                    </td>
+                    
+
+                </tr>
+                <tr>
+                    <th>SubTotal</th>
+                    <td>&#8377;{{item.checkout.subtotal}}</td>
+                </tr>
+                <tr>
+                    <th>Shipping</th>
+                    <td>&#8377;{{item.checkout.shipping}}</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td>&#8377;{{item.checkout.total}}</td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td>{{item.checkout.date}}</td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="col-md-9">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Name</th>
+                            <th>Brand/Color/Size</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in item.cp %}
+                        <tr>
+                            <td><img src="{{ p.product.pic1.url }}" alt="" height="80px" width="80px" class="rounded"></td>
+                            <td>{{ p.product.name }}</td>
+                            <td>{{ p.product.brand }}/{{ p.product.color }}/{{ p.product.size }}</td>
+                            <td>&#8377;{{ p.product.finalprice }}</td>
+                            <td>{{ p.qty }}</td>
+                            <td>&#8377;{{ p.total }}</td>
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor%}
+    </div>
+    {% else %}
+    <p class="text-center mt-3">No Orders History Found</p>
+    {% endif %}
+</div>
+{% endblock %}
