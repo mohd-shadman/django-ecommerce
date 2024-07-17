@@ -9,53 +9,51 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <h1>Payment Page</h1>
 
-    
-        <form id="payment-form">
-            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-            <button type="button" class="text-center" id="pay-button">Pay with Razorpay</button>
-        </form>
- 
+<form id="payment-form">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <button type="button" class="text-center" id="pay-button">Pay with Razorpay</button>
+</form>
 
-    <script>
-        document.getElementById('pay-button').onclick = function(event) {
-            event.preventDefault();
-            var options = {
-                "key": "{{ api_key }}", // Enter the Key ID generated from the Dashboard
-                "amount": "{{ amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-                "currency": "INR",
-                "name": "Your Company Name",
-                "description": "Purchase Description",
-                "image": "https://your-logo-url.com/logo.png",
-                "order_id": "{{ order_id }}", // This is a sample Order ID. Pass the `id` obtained in the response of the order creation API
-                "handler": function (response){
-                    window.location.href = `/payment-success/${response.razorpay_payment_id}/${response.razorpay_order_id}/${response.razorpay_signature}`;
-                },
-                "prefill": {
-                    "name": "{{ User.username }}",
-                    "email": "{{ User.email }}",
-                },
-                "theme": {
-                    "color": "#F37254"
-                }
-            };
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
+<script>
+    document.getElementById('pay-button').onclick = function(event) {
+        event.preventDefault();
+        var options = {
+            "key": "{{ api_key }}", // Enter the Key ID generated from the Dashboard
+            "amount": "{{ amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Your Company Name",
+            "description": "Purchase Description",
+            "image": "https://your-logo-url.com/logo.png",
+            "order_id": "{{ order_id }}", // This is a sample Order ID. Pass the `id` obtained in the response of the order creation API
+            "handler": function (response){
+                window.location.href = `/payment-success/${response.razorpay_payment_id}/${response.razorpay_order_id}/${response.razorpay_signature}`;
+            },
+            "prefill": {
+                "name": "{{ User.username }}",
+                "email": "{{ User.email }}",
+            },
+            "theme": {
+                "color": "#F37254"
+            }
         };
-    </script>
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    };
+</script>
 
-    <style>
-        #pay-button {
-            background-color: #F37254;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+<style>
+    #pay-button {
+        background-color: #F37254;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        #pay-button:hover {
-            background-color: #d86044;
-        }
-    </style>
+    #pay-button:hover {
+        background-color: #d86044;
+    }
+</style>
 {% endblock %}

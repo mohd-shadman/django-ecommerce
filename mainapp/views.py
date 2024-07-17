@@ -190,10 +190,10 @@ def checkoutpage(request):
         return HttpResponseRedirect("/admin/")
 
 @login_required(login_url="/login/")
-def rePayment(request,id):
+def rePayment(request, id):
     try:
         buyer = Buyer.objects.get(username=request.user.username)
-        checkout=Checkout.objects.get(username=request.user.username)
+        checkout = Checkout.objects.get(id=id)
         order_amount = checkout.total * 100  # Convert to paise
         order_currency = "INR"
         payment_order = client.order.create(dict(amount=order_amount, currency=order_currency))
@@ -202,12 +202,12 @@ def rePayment(request,id):
         checkout.save()
         return render(request, "pay.html", {
             "amount": order_amount,
-            
             "api_key": settings.RAZORPAY_API_KEY,
             "order_id": payment_id,
             "User": buyer
         })
-    except:
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return HttpResponseRedirect('/profile/')
 
 
