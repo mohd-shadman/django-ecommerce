@@ -4,6 +4,10 @@
 {% block title %}
 <title>Payment</title>
 {% endblock %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 {% block body %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -13,8 +17,28 @@
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     <button type="button" class="text-center" id="pay-button">Pay with Razorpay</button>
 </form>
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Payment Successful</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Your payment was successful!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmationButton">Go to Confirmation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
+    var id = "{{ id }}";
     document.getElementById('pay-button').onclick = function(event) {
         event.preventDefault();
         var options = {
@@ -25,8 +49,11 @@
             "description": "Purchase Description",
             "image": "https://your-logo-url.com/logo.png",
             "order_id": "{{ order_id }}", // This is a sample Order ID. Pass the `id` obtained in the response of the order creation API
-            "handler": function (response){
-                window.location.href = `/payment-success/${response.razorpay_payment_id}/${response.razorpay_order_id}/${response.razorpay_signature}`;
+            "handler": function (response) {
+                $('#successModal').modal('show');
+                document.getElementById('confirmationButton').onclick = function() {
+                    window.location.href = `/payment-success/${id}/${response.razorpay_payment_id}/${response.razorpay_order_id}/${response.razorpay_signature}`;
+                };
             },
             "prefill": {
                 "name": "{{ User.username }}",
@@ -52,7 +79,6 @@
         cursor: pointer;
     }
 
-    
     #pay-button:hover {
         background-color: #d86044;
     }

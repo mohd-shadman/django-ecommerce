@@ -182,7 +182,8 @@ def checkoutpage(request):
                     "amount": order_amount,
                     "api_key": settings.RAZORPAY_API_KEY,
                     "order_id": payment_id,
-                    "User": buyer
+                    "User": buyer,
+                    "id":checkout.id
                 })
         return render(request, 'checkout.html', {'buyer': buyer, 'total': total, 'shipping': shipping, 'subtotal': subtotal, 'cart': cart})
     except Exception as e:
@@ -204,7 +205,8 @@ def rePayment(request, id):
             "amount": order_amount,
             "api_key": settings.RAZORPAY_API_KEY,
             "order_id": payment_id,
-            "User": buyer
+            "User": buyer,
+            "id":id
         })
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -212,23 +214,22 @@ def rePayment(request, id):
 
 
 @login_required(login_url="/login/")
-def paymentSuccess(request, rpid, rpoid, rpsid):
-    buyer = Buyer.objects.get(username=request.user.username)
-    checkouts = Checkout.objects.filter(buyer=buyer).order_by('-id')
+def paymentSuccess(request,id, rpid, rpoid, rpsid):
+    checkouts = Checkout.objects.get(id=id)
     if checkouts.exists():
         checkout = checkouts.first()
         checkout.rpid = rpid
         checkout.paymentstatus = 1
         checkout.save()
-    return HttpResponseRedirect('/confirmation/')
+    return HttpResponseRedirect('/confirmation/'+id+'/')
 
 
 @login_required(login_url="/login/")
-def confirmationpage(request):
+def confirmationpage(request,id):
     try:
         buyer = Buyer.objects.get(username=request.user.username)
-        checkout = Checkout.objects.filter(buyer=buyer).order_by("-id").first()
-        cart = CheckoutProduct.objects.filter(checkout=checkout)
+
+        cart = CheckoutProduct.objects.filter(checkout=Checkout.objects.get(id=id))
         subtotal = 0
         shipping = 0
         total = 0
