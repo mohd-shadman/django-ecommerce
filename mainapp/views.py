@@ -177,15 +177,13 @@ def checkoutpage(request):
                 payment_order = client.order.create(dict(amount=order_amount, currency=order_currency))
                 payment_id = payment_order['id']
                 checkout.paymentmode = 1
-                total=order_amount/100
                 checkout.save()
                 return render(request, "pay.html", {
                     "amount": order_amount,
                     "api_key": settings.RAZORPAY_API_KEY,
                     "order_id": payment_id,
                     "User": buyer,
-                    "id":checkout.id,
-                   
+                    "id": checkout.id,
                 })
         return render(request, 'checkout.html', {'buyer': buyer, 'total': total, 'shipping': shipping, 'subtotal': subtotal, 'cart': cart, })
     except Exception as e:
@@ -199,7 +197,6 @@ def rePayment(request, id):
         checkout = Checkout.objects.get(id=id)
         order_amount = checkout.total * 100  # Convert to paise
         order_currency = "INR"
-        total=checkout.total
         payment_order = client.order.create(dict(amount=order_amount, currency=order_currency))
         payment_id = payment_order['id']
         checkout.paymentmode = 1
@@ -209,48 +206,59 @@ def rePayment(request, id):
             "api_key": settings.RAZORPAY_API_KEY,
             "order_id": payment_id,
             "User": buyer,
-            "id":id,
-            "total":total
+            "id": id,
+            "total": checkout.total,
         })
     except Exception as e:
         print(f"An error occurred: {e}")
         return HttpResponseRedirect('/profile/')
 
-
 @login_required(login_url="/login/")
-def paymentSuccess(request,id, rpid, rpoid, rpsid):
-    checkouts = Checkout.objects.get(id=id)
-    if checkouts.exists():
-        checkout = checkouts.first()
-        checkout.rpid = rpid
-        checkout.paymentstatus = 1
-        checkout.save()
-    return HttpResponseRedirect('/confirmation/'+id+'/')
-
-
-@login_required(login_url="/login/")
-def confirmationpage(request,id):
+def paymentSuccess(request, id, rpid, rpoid, rpsid):
     try:
         buyer = Buyer.objects.get(username=request.user.username)
-
-        cart = CheckoutProduct.objects.filter(checkout=Checkout.objects.get(id=id))
-        subtotal = 0
-        shipping = 0
-        total = 0
-
-        if cart:
-            for item in cart:
-                subtotal += item.total
-            if 0 < subtotal < 4000:
-                shipping = 150
-            total = subtotal + shipping
-
-        request.session['cart'] = {}
-        return render(request, 'confirmation.html', {'cart': cart, 'subtotal': subtotal, 'shipping': shipping, 'total': total, 'buyer': buyer, 'checkout': checkout})
+        checkout = Checkout.objects.get(id=id)
+        checkout.rpid = rpid
+        checkout.paymentStatus = 2
+        checkout.save()
+        
+        subject = 'Order Has Been Placed : Team Supershop'
+        message = f"""
+                Hello {buyer.name},
+                Your Order Has Been Placed!!!
+                You can now track your order in the Profile Section.
+                Team : Shadman SuperShop
+                """
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [buyer.email, ]
+        send_mail(subject, message, email_from, recipient_list)
+        return HttpResponseRedirect('/confirmation/')
     except Exception as e:
         print(f"An error occurred: {e}")
         return HttpResponseRedirect("/admin/")
-    
+
+@login_required(login_url="/login/")
+def confirmationpage(request, id):
+    try:
+        buyer = Buyer.objects.get(username=request.user.username)
+        cart = CheckoutProduct.objects.filter(checkout=Checkout.objects.get(id=id))
+        subtotal = sum(item.total for item in cart)
+        shipping = 150 if 0 < subtotal < 4000 else 0
+        total = subtotal + shipping
+
+        request.session['cart'] = {}
+        return render(request, 'confirmation.html', {
+            'cart': cart,
+            'subtotal': subtotal,
+            'shipping': shipping,
+            'total': total,
+            'buyer': buyer,
+            'checkout': Checkout.objects.get(id=id),
+        })
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return HttpResponseRedirect("/admin/")
+
 def contactpage(Request):
     if(Request.method=="POST"):
         c=Contact()

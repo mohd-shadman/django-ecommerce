@@ -1,87 +1,44 @@
-{% extends "index.html" %}
+{% extends 'index.html' %}
 {% load static %}
-
 {% block title %}
-<title>Payment</title>
+<title>Supershop | Payment</title>
 {% endblock %}
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 {% block body %}
+<div class="container p-3 mt-3 mb-3" >
+  <div class="row">
+    <button id="rzp-button1" class="btn btn_3  w-50" style="margin-left: 25%; margin-bottom:110px; margin-top:100px;">Pay &#8377;{{total}}</button>
+  </div>
+</div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<h1 class="text-center mt-5 ">Payment Page</h1>
-<div class="text-center " style="margin-top: 173px;">
-<form id="payment-form ">
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <button type="button" class="text-center" id="pay-button">Pay &#8377;{{total}}</button>
-</form>
-</div>
-<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Payment Successful</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Your payment was successful!
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn_3" id="confirmationButton">Go to Confirmation</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <script>
-    var id = "{{ id }}";
-    document.getElementById('pay-button').onclick = function(event) {
-        event.preventDefault();
-        var options = {
-            "key": "{{ api_key }}", // Enter the Key ID generated from the Dashboard
-            "amount": "{{ amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
-            "name": "Your Company Name",
-            "description": "Purchase Description",
-            "image": "https://your-logo-url.com/logo.png",
-            "order_id": "{{ order_id }}", // This is a sample Order ID. Pass the `id` obtained in the response of the order creation API
-            "handler": function (response) {
-                $('#successModal').modal('show');
-                document.getElementById('confirmationButton').onclick = function() {
-                    window.location.href = `/payment-success/${id}/${response.razorpay_payment_id}/${response.razorpay_order_id}/${response.razorpay_signature}`;
-                };
-            },
-            "prefill": {
-                "name": "{{ User.username }}",
-                "email": "{{ User.email }}",
-            },
-            "theme": {
-                "color": "#F37254"
-            }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    };
+  var options = {
+    "key": "{{api_key}}", // Enter the Key ID generated from the Dashboard
+    "name": "SuperShop",
+    "description": "Test Transaction",
+    "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response) {
+      window.location.href = "/payment-success/{{id}}/" + response.razorpay_payment_id + "/" + response.razorpay_order_id + "/" + response.razorpay_signature + "/";
+    },
+    "prefill": {
+      "name": "{{User.name}}",
+      "email": "{{User.email}}",
+      "contact": "{{User.phone}}"
+    },
+    "notes": {
+      "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+      "color": "#3399cc"
+    }
+  };
+  var rzp1 = new Razorpay(options);
+  rzp1.on('payment.failed', function (response) {
+    alert("Payment failed. Please try again.");
+    window.location.href = "/checkout/";
+  });
+  document.getElementById('rzp-button1').onclick = function (e) {
+    rzp1.open();
+    e.preventDefault();
+  }
 </script>
-
-<style>
-    #pay-button {
-        background-color: #F37254;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    #pay-button:hover {
-        background-color: #d86044;
-    }
-</style>
 {% endblock %}
