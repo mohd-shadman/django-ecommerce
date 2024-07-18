@@ -177,15 +177,17 @@ def checkoutpage(request):
                 payment_order = client.order.create(dict(amount=order_amount, currency=order_currency))
                 payment_id = payment_order['id']
                 checkout.paymentmode = 1
+                total=order_amount/100
                 checkout.save()
                 return render(request, "pay.html", {
                     "amount": order_amount,
                     "api_key": settings.RAZORPAY_API_KEY,
                     "order_id": payment_id,
                     "User": buyer,
-                    "id":checkout.id
+                    "id":checkout.id,
+                   
                 })
-        return render(request, 'checkout.html', {'buyer': buyer, 'total': total, 'shipping': shipping, 'subtotal': subtotal, 'cart': cart})
+        return render(request, 'checkout.html', {'buyer': buyer, 'total': total, 'shipping': shipping, 'subtotal': subtotal, 'cart': cart, })
     except Exception as e:
         print(f"An error occurred: {e}")
         return HttpResponseRedirect("/admin/")
@@ -197,6 +199,7 @@ def rePayment(request, id):
         checkout = Checkout.objects.get(id=id)
         order_amount = checkout.total * 100  # Convert to paise
         order_currency = "INR"
+        total=checkout.total
         payment_order = client.order.create(dict(amount=order_amount, currency=order_currency))
         payment_id = payment_order['id']
         checkout.paymentmode = 1
@@ -206,7 +209,8 @@ def rePayment(request, id):
             "api_key": settings.RAZORPAY_API_KEY,
             "order_id": payment_id,
             "User": buyer,
-            "id":id
+            "id":id,
+            "total":total
         })
     except Exception as e:
         print(f"An error occurred: {e}")

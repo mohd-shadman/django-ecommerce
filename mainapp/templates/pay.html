@@ -11,12 +11,13 @@
 
 {% block body %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<h1>Payment Page</h1>
-
-<form id="payment-form">
+<h1 class="text-center mt-5 ">Payment Page</h1>
+<div class="text-center " style="margin-top: 173px;">
+<form id="payment-form ">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <button type="button" class="text-center" id="pay-button">Pay with Razorpay</button>
+    <button type="button" class="text-center" id="pay-button">Pay &#8377;{{total}}</button>
 </form>
+</div>
 <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
