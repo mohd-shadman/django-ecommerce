@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 import razorpay
 from supershop.settings import RAZORPAY_API_KEY ,RAZORPAY_API_SECRET_KEY
+from django.core.paginator import Paginator
 # Create your views here.
 
 def homepage(Request):
@@ -313,7 +314,10 @@ def search(Request):
         mainCategory = MainCategory.objects.all().order_by("-id")
         subCategory = SubCategory.objects.all().order_by("-id")
         brand = Brand.objects.all().order_by("-id")
-        return render(Request, 'shop.html', {'products': products, 'maincategory': mainCategory, 'subcategory': subCategory, 'brand': brand, 'mc': "All", 'sc': "All", "br": "All"})
+        paginator=Paginator(products,4)
+        page_number=Request.GET.get("page")
+        page_obj= paginator.get_page(page_number)
+        return render(Request, 'shop.html', {'page_obj': page_obj, 'maincategory': mainCategory, 'subcategory': subCategory, 'brand': brand, 'mc': "All", 'sc': "All", "br": "All"})
     else:
         return HttpResponseRedirect("/")
 
@@ -331,9 +335,13 @@ def shoppage(Request, mc, sc, br):
     mainCategory = MainCategory.objects.all().order_by("-id")
     subCategory = SubCategory.objects.all().order_by("-id")
     brand = Brand.objects.all().order_by("-id")
-    
     testimonial=Testimonial.objects.all().order_by("-id")
-    return render(Request, 'shop.html', {'products': products, 'maincategory': mainCategory, 'subcategory': subCategory, 'brand': brand, 'mc': mc, 'sc': sc, 'br': br,'testimonial':testimonial})
+    
+    paginator=Paginator(products,4)
+    page_number=Request.GET.get("page")
+    page_obj= paginator.get_page(page_number)
+    
+    return render(Request, 'shop.html', {'maincategory': mainCategory, 'subcategory': subCategory, 'brand': brand, 'mc': mc, 'sc': sc, 'br': br,'testimonial':testimonial,'page_obj':page_obj})
 
 def singleproductpage(Request,id):
     products = Product.objects.get(id=id)
@@ -530,4 +538,4 @@ def ForgetPassword3(request):
     else:
         return HttpResponseRedirect("/forget-password1/")
         
-        
+

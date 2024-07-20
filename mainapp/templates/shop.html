@@ -76,7 +76,7 @@
                 <div class="col-md-9">
                     <div class="product_list">
                         <div class="row">
-                            {% for i in products %}
+                            {% for i in page_obj %}
                             <div class=" col-lg-3 col-md-4 col-sm-6 col-12">
                                 <div class="single_product_item">
                                     <div class="single_product_item_thumb">
@@ -90,9 +90,25 @@
                             </div>
                             {% endfor %}
                         </div>
+                       
                         <div class="load_more_btn text-center">
-                            <a href="#" class="btn_3">Load More</a>
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?page=1" class="btn btn_3">&laquo; first</a>
+                                    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn_3">previous</a>
+                                {% endif %}
+                        
+                                <span class="current">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                </span>
+                        
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}" class="btn btn_3">next</a>
+                                    <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn_3">last &raquo;</a>
+                                {% endif %}
+                            </span>
                         </div>
+
                     </div>
                 </div>
             </div>
