@@ -450,7 +450,7 @@ def wishlistpage(request, id):
     return HttpResponseRedirect("/profile")
 
 @login_required(login_url="/login/")
-def deletewishlist(request,id):
+def deletewishlist(request ,id):
     try:
         w=Wishlist.objects.get(id=id)
         w.delete()
